@@ -45,8 +45,10 @@ def resample_emg(fp, out_fp=None, time_col=0, start_col=1, end_col=3):
     resampled_emg_df = resampled_emg_df.reset_index(drop=True)
     
     if out_fp is None:
-        tmp = fp.split('.').insert(-2, '_resampled')
+        tmp = fp.split('.')
+        tmp.insert(1, '_resampled')
         out_fp = tmp[0] + tmp[1] + '.' + tmp[2]
     
-    resampled_emg_df.to_csv(out_fp)
+    
+    resampled_emg_df.to_csv(out_fp, index=False)
     print("Done!")
