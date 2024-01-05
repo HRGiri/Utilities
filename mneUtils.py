@@ -9,6 +9,7 @@ import glob
 import os
 
 import mne
+from mne.decoding import CSP
 
 import numpy as np
 import scipy
@@ -252,3 +253,41 @@ def get_psd(epochs, method=None, isData=False, fs=1000, fmin=0, fmax=30, picks='
     f = f[np.where(f>=fmin)[0]]
 
     return P, f
+
+
+
+
+def extract_spatial_features(x, y=None, csp=None, n_components=5):
+  """
+  Extract Common Spatial Patterns from time-series data.
+
+  Parameters
+  ----------
+  x : ndarray
+    Time-series EEG data usually in the shape (n_trials, n_channels, n_samples).
+  y : ndarray, optional
+    Labels of the time-series data for training of the shape (n_trials,). 
+    If not provided, the time-series data is transformed instead, as in the case of testing or inference.
+    The default is None.
+  csp : mne.decoding.CSP, optional
+    CSP object with custom parameters. If not provided, default parameters are used. 
+    The default is None.
+  n_components : int, optional
+    Number of CSP components. The default is 5.
+
+  Returns
+  -------
+  features : ndarray
+    The transformed array in the shape of (n_trials, n_components).
+  csp : mne.decoding.CSP
+    Trained CSP object.
+
+  """
+  if csp is None:
+    csp = CSP(n_components=n_components, log=True, norm_trace=False)
+
+  if y is not None:
+    csp.fit(x,y)
+  features = csp.transform(x)
+
+  return features, csp
