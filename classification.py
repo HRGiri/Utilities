@@ -83,7 +83,7 @@ def extract_train_features(raw, choice=None,slice_start_times=np.array([0]), sli
 
 
 
-def get_train_labels(epochs, n_slices = 1, return_groups=True):
+def get_train_labels(epochs, n_slices = 1, return_groups=True, mapping={99:0,77:0,88:1,66:1,9:0,7:0,8:1,6:1}):
   """
   Returns standardized labels for epochs.
 
