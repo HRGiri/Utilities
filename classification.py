@@ -83,7 +83,7 @@ def extract_train_features(raw, choice=None,slice_start_times=np.array([0]), sli
 
 
 
-def get_train_labels(epochs, n_slices = 1, return_groups=True, mapping={99:0,77:0,88:1,66:1,9:0,7:0,8:1,6:1}):
+def get_train_labels(epochs, n_slices = 1, return_groups=True, mapping=None):
   """
   Returns standardized labels for epochs.
 
@@ -96,6 +96,10 @@ def get_train_labels(epochs, n_slices = 1, return_groups=True, mapping={99:0,77:
   return_groups : bool, optional
     Whether to return groups from which a gouped cross validation can be done. 
     The default is True.
+  mapping : dict
+    Dictionary of event_id to class labels pairs.
+    If None, a binary mapping of Close/Open is done.
+    The default is None.
 
   Returns
   -------
@@ -104,7 +108,9 @@ def get_train_labels(epochs, n_slices = 1, return_groups=True, mapping={99:0,77:
     Otherwise, only the labels is returned.
 
   """
-  Y = standardize_labels(epochs.events[:,2], mapping={99:0,77:0,88:1,66:1,9:0,7:0,8:1,6:1})
+  if mapping is None:
+    mapping = {99:0,77:0,88:1,66:1,9:0,7:0,8:1,6:1}
+  Y = standardize_labels(epochs.events[:,2], mapping=mapping)
   n_trials = Y.shape[0]
   Y = np.array([list(Y)] * n_slices)
   Y = Y.reshape((n_slices * Y.shape[1],),order='F')
