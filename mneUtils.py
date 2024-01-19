@@ -22,8 +22,8 @@ annotations_dict = {'Comment/Blinking' : 'Blink',
                     'Comment/Imagine Open' : 'IO',
                     'Comment/Imagine close' : 'IC',
                     'Comment/Left' : 'LH',
-                    'Comment/Ready' : 'Ready',
-                    'Comment/Rest' : 'Rest',
+                    'Comment/Ready' : 'Rest',
+                    'Comment/Rest' : 'Ready',
                     'Comment/Right' : 'RH'}
 
 def load_raws(subject_name, preload=True, in_drive=False, dir_path=None):
@@ -136,6 +136,8 @@ def get_epochs(raw, target=None, tmin=0, tmax=3, return_events=False):
       to_be_deleted.append(key)
 
   for key in to_be_deleted:
+    marked_indices = np.where(events[:,2] == event_dict[key])[0]
+    events = np.delete(events, marked_indices, axis=0)
     del event_dict[key]
 
   if return_events:
