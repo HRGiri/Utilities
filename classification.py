@@ -22,6 +22,32 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.pipeline import Pipeline
 
 
+def remove_outliers(data, lowerP=25, upperP=75, axis=0):
+  """
+  Remove outliers according to IQR rule.
+
+  Parameters
+  ----------
+  data : ndarray
+    Array with several observations of a feature.
+  lowerP : int, optional
+    DESCRIPTION. The default is 25.
+  upperP : int, optional
+    DESCRIPTION. The default is 75.
+  axis : int, optional
+    DESCRIPTION. The default is 0.
+
+  Returns
+  -------
+  TYPE
+    DESCRIPTION.
+
+  """
+  percentiles = np.percentile(data, [lowerP, upperP])
+  outlier_indices = np.concatenate([np.where(data > 1.5 * percentiles[1])[axis], np.where(data < percentiles[0]/1.5)[axis]])
+  return np.delete(data, outlier_indices, axis=axis)
+
+
 def extract_train_features(raw, choice=None,slice_start_times=np.array([0]), slice_length=7, window_length=3, time_interval = 1, picks=None, concatenate=True):
   """
   Extracts spectral and temporal features for training.

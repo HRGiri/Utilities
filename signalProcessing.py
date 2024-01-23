@@ -601,6 +601,24 @@ def get_complexity(X):
   return get_mobility(X_)/get_mobility(X)
 
 
+def get_mean_temporal_power(X):
+  """
+  Returns Mean Power of a time domain signal.
+
+  Parameters
+  ----------
+  X : ndarray
+    Time-domain signal with last axis as time axis.
+
+  Returns
+  -------
+  ndarray
+    Mean Power.
+
+  """
+  return np.square(X).mean(axis=-1)
+
+
 
 def extract_temporal_features(X=None, feature_names=None, return_feature_names=False, batch=True):
   """
@@ -656,3 +674,62 @@ def extract_temporal_features(X=None, feature_names=None, return_feature_names=F
     features.append(funcs[name](X))
 
   return np.concatenate(features, axis=-1)
+
+
+def common_average_reference(data, ch_axis=1):
+  """
+  Performs Common Average Referencing on multi-channel EEG data.
+
+  Parameters
+  ----------
+  data : ndarray
+    EEG data with one of the axis as channel axis.
+  ch_axis : int, optional
+    Channel axis. The default is 1.
+
+  Returns
+  -------
+  ndarray
+    Common average referenced EEG data.
+
+  """
+  mean = np.mean(data, axis=ch_axis)
+  mean = np.expand_dims(mean, ch_axis)
+  mean = np.concatenate([mean] * data.shape[ch_axis], axis=ch_axis)
+  return data - mean
+
+
+
+def pick_channels(data, picks=None, ch_names=None, ch_axis=1):
+  """
+  Pick a subset of channels in an ndarray.
+
+  Parameters
+  ----------
+  data : ndarray
+    EEG data with one of the axis as channel axis.
+  picks : list, optional
+    List of channel names to be picked.
+    If None, the array is returned as it is. The default is None.
+  ch_names : list, optional
+    List of all channel names present in the array. The default is None.
+  ch_axis : int, optional
+    Channel axis. The default is 1.
+
+  Raises
+  ------
+  Exception
+    Raised if neither of picks or ch_names is provided.
+
+  Returns
+  -------
+  ndarray
+    EEG data with a subset of channels.
+
+  """
+  if picks is None:
+    return data
+  if ch_names is None:
+    raise Exception("Please provide the list of all channel names.")
+  ch_indices = [ch_names.index(pick) for pick in picks]
+  return np.take(data, ch_indices, axis=ch_axis)
