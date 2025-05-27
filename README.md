@@ -1,2 +1,2 @@
 # Utilities
- Common functions that can be used elsewhere
+ Common MNE python and signal processing functions for EEG analysis.
